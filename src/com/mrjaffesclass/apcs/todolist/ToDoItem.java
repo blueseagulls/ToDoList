@@ -1,4 +1,7 @@
 package com.mrjaffesclass.apcs.todolist;
+
+import java.util.Date;
+
 /**
  * To do item
  * 
@@ -10,21 +13,37 @@ public class ToDoItem {
   /**
    * id:          ID number of to do item. Assigned when added to list
    * description: Description of to do item
+   * date:        When the item should be done by
    * done:        True if to do item is complete
    */
   private int id;               
   private String description;
+  private Date date;
   private boolean done;
   
+    /**
+    * Constructor with done set to false in constructor
+    * @param _id           ID number of to do item
+    * @param _description  Description of to do item
+    */
+    public ToDoItem(int _id, String _description) {
+        description = _description;
+        id = _id;
+        date = null;
+        done = false;     // Default to not completed
+    }
+    
   /**
    * Constructor with done set to false in constructor
    * @param _id           ID number of to do item
    * @param _description  Description of to do item
+   * @param _done         If the item is completed
    */
-  public ToDoItem(int _id, String _description) {
+  public ToDoItem(int _id, String _description, boolean _done) {
     description = _description;
     id = _id;
-    done = false;     // Default to not completed
+    date = null;
+    done = _done;     // Default to not completed
   }
 
   /**
@@ -32,13 +51,28 @@ public class ToDoItem {
    * @param _id           ID number of to do item
    * @param _description  Description of to do item
    * @param _done         Done flag
+   * @param _date         Date of to do item
    */
-  public ToDoItem(int _id, String _description, boolean _done) {
+  public ToDoItem(int _id, String _description, boolean _done, Date _date) {
     description = _description;
     id = _id;
+    date = _date;
     done = _done;     // Default to not completed
   }
 
+  /**
+   * Constructor
+   * @param _id           ID number of to do item
+   * @param _description  Description of to do item
+   * @param _date         Date of to do item
+   */
+  public ToDoItem(int _id, String _description, Date _date) {
+    description = _description;
+    id = _id;
+    date = _date;
+    done = false;     // Default to not completed
+  }
+  
   /**
    * Get the to do item description
    * @return The description of to do item
@@ -95,12 +129,29 @@ public class ToDoItem {
   }
   
   /**
+   * Get the to do item date
+   * @return date of the to do item
+   */
+  public Date getDate() {
+    return date;
+  }
+  
+  /**
+   * Sets the ID of the to do item. Can only be called from inside this class
+   * @param date date value to set
+   */
+  public void setDate(Date date) {
+    this.date = date;
+  }
+  
+  /**
    * Transfer the description and done flag of another to do item into this one
    * @param anotherItem Item whose data values we are copying
    */
   public void merge(ToDoItem anotherItem) {
     this.setDescription(anotherItem.getDescription());
-    this.setDone(anotherItem.isDone());    
+    this.setDate(anotherItem.getDate());
+    this.setDone(anotherItem.isDone());
   }
 
 }
