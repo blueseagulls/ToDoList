@@ -38,6 +38,8 @@ public class AppModel implements MessageHandler {
     messenger.subscribe("getItem", this);
     messenger.subscribe("saveItem", this);
     messenger.subscribe("deleteItem", this);
+    messenger.subscribe("sortEarliestFirst", this);
+    messenger.subscribe("sortEarliestLast", this);
     messenger.subscribe("removeCompletedItems", this);
   }
 
@@ -80,6 +82,20 @@ public class AppModel implements MessageHandler {
       case "deleteItem":
         item = (ToDoItem)messagePayload;                  
         this.deleteItem(item);
+        messenger.notify("saved", null, true);
+        messenger.notify("items", this.getItems(), true);
+        break;
+       
+      //Somebody wants us to sort the items by date
+      //Rearrange the list, save the list and send the updated list
+      case "sortEarliestFirst":
+        sortByDate(true);
+        messenger.notify("saved", null, true);
+        messenger.notify("items", this.getItems(), true);
+        break;
+      
+      case "sortEarliestLast":
+        sortByDate(false);
         messenger.notify("saved", null, true);
         messenger.notify("items", this.getItems(), true);
         break;
@@ -165,6 +181,7 @@ public class AppModel implements MessageHandler {
     return deleteItem(item.getId());
   }
   
+  
   /**
    * Removes all completed items from the to do list
    */
@@ -186,4 +203,48 @@ public class AppModel implements MessageHandler {
       toDoList.add(item);
     }
   }
+  
+  /**
+   * Sorts the list according to date. If date is null, it goes last
+   * @param earliestFirst if true, sorts from earliest to latest, 
+   * if false sorts the opposite
+   */
+   public void sortByDate(boolean earliestFirst) {
+      boolean notSorted;
+      int lastItemWithDate = toDoList.size();
+      ToDoItem temp = new ToDoItem(-1, "Because if first date is null sort fails", true, new Date());
+      toDoList.add(0,temp);
+      do {
+          notSorted = false;
+          for(int j = 0; j < lastItemWithDate; j++){
+              try{
+                if(toDoList.get(j).getDate().after(toDoList.get(j+1).getDate())
+                        == earliestFirst) {
+                  //swap to the desired order
+                  toDoList.add(j+1, toDoList.remove(j));
+                  notSorted = true;
+              } } catch(NullPointerException nullDateInJ_Or_JPlusOne) {
+                //Put it at the end of the list and continue sorting without it
+                lastItemWithDate--;
+                notSorted = true;
+                //we got rid of the object, 
+                //and a new thing is in it's place to look at,
+                j--;
+                try{
+                   //Checks to see where the null was
+                   toDoList.get(j+1).getDate();
+                   //If the last line doesn't throw an error, the error is in j+1
+                   //Put it to the end of the list
+                   toDoList.add(toDoList.remove(j+2));
+                } catch(NullPointerException nullDateInJPlusOne) {
+                  //If j+1 threw an exception in our other catch, it's the error
+                  //Put it to the end of the list, and ignore it for sorting
+                  toDoList.add(toDoList.remove(j+1));
+              }
+             }
+          }
+      } while(notSorted);
+      deleteItem(temp);
+  } 
+  
 }
