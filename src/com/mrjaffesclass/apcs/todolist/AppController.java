@@ -65,12 +65,13 @@ public class AppController implements MessageHandler {
    */
   public void addSampleItems() {
     String[] initialData = {
-      "Do APCS project", 
-      "Finish English paper", 
-      "This is a very long to do item that has to be done soon!",
-      "Proofread resume",
-      "Get gas in the car",
-      "Deposit paycheck",
+       "Do To Do List project", 
+      "Go to Balboa for Earth Day", 
+      "Commit to a college!",
+      "Wash the car",
+      "Buy new shoes",
+      "Deposit savings",
+
     };
     
     // Loop through initialData and create items to add to the appModel
